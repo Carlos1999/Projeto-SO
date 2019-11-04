@@ -3,21 +3,21 @@ from datetime import datetime
 
 class MemoriaVirtual:
   def __init__(self,tamanhoMemoria):
-    self.memoriaSwapping = Memoria()
+    self.memoriaFisica = Memoria()
     self.tamanhoMemoria = tamanhoMemoria
     self.memoriaVirtual = [] 
     self.contador=0
     self.ponteiro=0
     for i in range(0,tamanhoMemoria):
-      self.memoriaSwapping.adicionarProcesso(str(i)+";NAME;1;0;"+str(int((self.memoriaSwapping.getTamanhoMemoria()+1)/self.tamanhoMemoria)))
+      self.memoriaFisica.adicionarProcesso(str(i)+";NAME;1;0;"+str(int((self.memoriaFisica.getTamanhoMemoria()+1)/self.tamanhoMemoria)))
     for i in range(0,tamanhoMemoria):
-      self.memoriaSwapping.substituirProcesso(i,[0,"Defalt",0,0,0])  
+      self.memoriaFisica.substituirProcesso(i,[0,"Defalt",0,0,0])  
       self.inserir([-1,0,0,0,0]) 
     
 #----------------------------------------------------------------------------------
   def organizarProcesso(self,pid,name,quantum,priority,size):
     processo=[int(pid),name,int(quantum),int(priority),int(size)] 
-    tamanhoMaxPagina = int((self.memoriaSwapping.getTamanhoMemoria()+1)/self.tamanhoMemoria)
+    tamanhoMaxPagina = int((self.memoriaFisica.getTamanhoMemoria()+1)/self.tamanhoMemoria)
     processosRemovidos=[]
     
     while(processo[4]>tamanhoMaxPagina):
@@ -47,7 +47,7 @@ class MemoriaVirtual:
       if(self.memoriaVirtual[self.ponteiro%self.tamanhoMemoria][0]==0):
         
         self.memoriaVirtual.pop(self.ponteiro%self.tamanhoMemoria)
-        processoSaiu = self.memoriaSwapping.substituirProcesso(self.contador%self.tamanhoMemoria,pagina[3])        
+        processoSaiu = self.memoriaFisica.substituirProcesso(self.contador%self.tamanhoMemoria,pagina[3])        
         print("Processo: ",pagina[3],"inserido na memória")
         pagina[3] = pagina[3][0]
         self.memoriaVirtual.insert(self.ponteiro%self.tamanhoMemoria,pagina)        
@@ -66,7 +66,7 @@ class MemoriaVirtual:
       print(i)      
       
   def printMemoriaFisica(self):
-    self.memoriaSwapping.print()
+    self.memoriaFisica.print()
 
   def controleTempoBitR(self):
     now = datetime.now()
@@ -89,12 +89,33 @@ class MemoriaVirtual:
       return True
     return False              
 
+  def cheia(self):
+    contador =0
+    for pagina in self.memoriaVirtual:
+      print(pagina)
+      if(pagina[3] != -1):
+        contador +=1 
+    if(contador == self.tamanhoMemoria):
+      return True
+    return False    
 
   def esvazearMemorias(self):
     for i in range(0,len(self.memoriaVirtual)):
       self.memoriaVirtual[i][0]=0
       self.memoriaVirtual[i][3]=0
-    self.memoriaSwapping.esvazear()  
+    self.memoriaFisica.esvazear()  
+
+  def getProcessos(self):
+    return self.memoriaFisica
+
+  def decrementaProcesso(self,processoParametro):
+    for processo in self.memoriaFisica:
+      if(processo==processoParametro):
+        if(processo[2]>0):
+          processo[2]=processo[2]-1
+          return processo            
 
 mv = MemoriaVirtual(4)
+
 print(mv.vazia())
+mv.printMemoriaFisica()
