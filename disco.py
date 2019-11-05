@@ -26,9 +26,9 @@ class Disco:
     arquivoEscrita = open(self.nomeArquivo, 'a')
     processoSplit = processo.split(";")      
     if(ultimo==True):
-      arquivoEscrita.write(processoSplit[0]+";"+processoSplit[1]+";"+processoSplit[2]+";"+processoSplit[3]) 
+      arquivoEscrita.write(processoSplit[0]+";"+processoSplit[1]+";"+processoSplit[2]+";"+processoSplit[3]+";"+processoSplit[4]) 
     else:
-      arquivoEscrita.write(processoSplit[0]+";"+processoSplit[1]+";"+processoSplit[2]+";"+processoSplit[3]+"\n")
+      arquivoEscrita.write(processoSplit[0]+";"+processoSplit[1]+";"+processoSplit[2]+";"+processoSplit[3]+";"+processoSplit[4]+"\n")
     print("Processo: "+processo+" foi para o disco!")
     arquivoEscrita.close()    
   
@@ -51,10 +51,3 @@ class Disco:
     for linha in arquivoLeitura:
         print(linha)  
     arquivoLeitura.close()  
-
-disco = Disco("arquivo.txt")
-for i in range (0,10):
-  disco.escreverProcessoDisco(str(i)+";name;QUANTUM;PRIORITY;SIZE",False)
-disco.escreverProcessoDisco("10;name;QUANTUM;PRIORITY;SIZE",True)  
-for i in range (0,11):
-  print(disco.retirarProcessoDisco())

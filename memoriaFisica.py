@@ -16,7 +16,7 @@ class Memoria:
         espaco[2]= processo[4] + espaco[1]-1
         espaco[3]=(processo)                
         if((len(self.memoria)==contador+1) and self.memoria[contador][2]<self.tamanhoMemoria):
-          self.memoria.insert(contador+1,[0,espaco[2]+1,self.tamanhoMemoria,[0,0,0,0]])
+          self.memoria.insert(contador+1,[0,espaco[2]+1,self.tamanhoMemoria,[0,0,0,0,0]])
         return True
       contador+=1
     return False    
@@ -36,3 +36,6 @@ class Memoria:
 
   def getTamanhoMemoria(self):
     return self.tamanhoMemoria
+
+  def getMemoria(self):
+    return self.memoria  

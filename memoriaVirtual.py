@@ -92,7 +92,6 @@ class MemoriaVirtual:
   def cheia(self):
     contador =0
     for pagina in self.memoriaVirtual:
-      print(pagina)
       if(pagina[3] != -1):
         contador +=1 
     if(contador == self.tamanhoMemoria):
@@ -106,16 +105,11 @@ class MemoriaVirtual:
     self.memoriaFisica.esvazear()  
 
   def getProcessos(self):
-    return self.memoriaFisica
+    return self.memoriaFisica.getMemoria()
 
   def decrementaProcesso(self,processoParametro):
-    for processo in self.memoriaFisica:
+    for processo in self.memoriaFisica.getMemoria():
       if(processo==processoParametro):
-        if(processo[2]>0):
-          processo[2]=processo[2]-1
-          return processo            
-
-mv = MemoriaVirtual(4)
-
-print(mv.vazia())
-mv.printMemoriaFisica()
+        if(processo[3][2]>0):
+          processo[3][2]=processo[3][2]-1
+          return processo[3]            
