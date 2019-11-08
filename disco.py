@@ -8,8 +8,7 @@ class Disco:
     linhasFinal = "" 
     retornarLinha = ""
     contador = 0
-    for linha in arquivoLeitura:
-      linhaSplit = linha.split(";")       
+    for linha in arquivoLeitura:      
       if(contador==0):  
         retornarLinha = linha
       else:
@@ -21,6 +20,15 @@ class Disco:
     arquivoEscrita.write(linhasFinal)
     arquivoEscrita.close()      
     return retornarLinha.replace("\n","")
+  def existeNoDisco(self,pid):
+    arquivoLeitura = open(self.nomeArquivo, 'r') 
+    for linha in arquivoLeitura:
+      linhaSplit = linha.split(";")       
+      if(pid==linhaSplit[0]):
+        arquivoLeitura.close() 
+        return True
+    arquivoLeitura.close()     
+    return False         
 
   def escreverProcessoDisco(self,processo,ultimo):
     arquivoEscrita = open(self.nomeArquivo, 'a')
