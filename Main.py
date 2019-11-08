@@ -15,7 +15,7 @@ def controlaTempoPrioridade():
   global contadorPrioridade
   global prioridade
   while(True):
-    if(t2.isAlive()):
+    if(t3.isAlive()):
       if(prioridade == 4):
         if(contadorPrioridade==15):
           prioridade = 3
@@ -67,7 +67,7 @@ def controlaRetidadaDisco():
         dados = dados.split(";")
         processosRetirados = memoriaVirtual.organizarProcesso(int(dados[0]),dados[1],int(dados[2]),int(dados[3]),int(dados[4]))             
         for processo in processosRetirados:
-            if(processo == [0,"Defalt",0,0,0]):
+            if(processo == [0,"VAZIO",0,-1,0]):
               continue
             elif(processo[2]==0):
               print("Processo ",processo," finalizou a execução! (não volta para o disco)")
@@ -77,9 +77,9 @@ def controlaRetidadaDisco():
         memoriaVirtual.printMemoriaVirtual()
         print("Memoria fisica:\nMapa De Bits|Inicio|Fim|Processo")
         memoriaVirtual.printMemoriaFisica()   
-        print("--------------------------------------------------------------")
+        print("--------------------------------------------------------------\n \n")
         retirarProcesso -= 1
-        time.sleep(1)
+        time.sleep(2)
       if(t3.isAlive() == False):
         sys.exit(0) 
 
@@ -116,9 +116,15 @@ def CPU():
           sys.exit(0)
 
         if(processoFinalizou == len(memoriaVirtual.getProcessos())):
-          print("Todos os processos finalizaram, Buscando novos na memória!")
-          retirarProcesso = len(memoriaVirtual.getProcessos())
-          time.sleep(len(memoriaVirtual.getProcessos())+1)
+          for processo in memoriaVirtual.getProcessos():
+            processo[3][3] = -1
+          print("\n \n \n |-------------------------------------------------------------------|")              
+          print("Todos os processos na memória foram executados, serão trazidos novos!")
+          print("|-------------------------------------------------------------------|\n \n \n")
+          prioridade = 4
+          contadorPrioridade = 0
+          time.sleep(1)
+
 
         elif (encontrouProcesso==0 and prioridade>1):
           contadorPrioridade = 0

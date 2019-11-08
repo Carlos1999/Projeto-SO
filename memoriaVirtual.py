@@ -11,7 +11,7 @@ class MemoriaVirtual:
     for i in range(0,tamanhoMemoria):
       self.memoriaFisica.adicionarProcesso(str(i)+";NAME;1;0;"+str(int((self.memoriaFisica.getTamanhoMemoria()+1)/self.tamanhoMemoria)))
     for i in range(0,tamanhoMemoria):
-      self.memoriaFisica.substituirProcesso(i,[0,"Defalt",0,0,0])  
+      self.memoriaFisica.substituirProcesso(i,[0,"VAZIO",0,-1,0])  
       self.inserir([-1,0,0,0,0]) 
     
 #----------------------------------------------------------------------------------
@@ -82,7 +82,6 @@ class MemoriaVirtual:
   def vazia(self):
     contador =0
     for pagina in self.memoriaVirtual:
-      print(pagina)
       if(pagina[3] == -1):
         contador +=1 
     if(contador == self.tamanhoMemoria):
@@ -90,13 +89,13 @@ class MemoriaVirtual:
     return False              
 
   def cheia(self):
-    contador =0
-    for pagina in self.memoriaVirtual:
-      if(pagina[3] != -1):
-        contador +=1 
-    if(contador == self.tamanhoMemoria):
+    contador = 0
+    for processo in self.getProcessos():
+      if(processo[3][3]!=-1):   
+        contador +=1
+    if(contador == len(self.getProcessos())):
       return True
-    return False    
+    return False      
 
   def esvazearMemorias(self):
     for i in range(0,len(self.memoriaVirtual)):
@@ -106,6 +105,9 @@ class MemoriaVirtual:
 
   def getProcessos(self):
     return self.memoriaFisica.getMemoria()
+
+  def setProcessos(self,memoria):
+    self.memoriaFisica = memoria  
 
   def decrementaProcesso(self,processoParametro):
     for processo in self.memoriaFisica.getMemoria():
