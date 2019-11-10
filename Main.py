@@ -1,13 +1,153 @@
 from disco import Disco
 from memoriaFisica import Memoria 
 from memoriaVirtual import MemoriaVirtual 
+import tkinter as tk
+from tkinter import ttk
+from tkinter import *
 import random
 import time
 import threading
 import sys
 
-memoriaVirtual = MemoriaVirtual(4)
-disco = Disco('arquivo.txt')
+def inserirProcessos():
+  quantidade = entrada.get()
+  
+  for i in range (0,int(quantidade)):
+    letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    pid = random.randint(0,9999)
+    while (disco.existeNoDisco(str(pid))):
+      pid = random.randint(0,9999)
+    name = ""
+    for letra in range (0,6):
+      name += random.choice(letras)
+    quantum = random.randint(1,4)
+    priority = random.randint(1,4)
+    size = random.randint(100,500)
+    if(i == int(quantidade)-1):        
+      disco.escreverProcessoDisco(str(pid)+";"+name+";"+str(quantum)+";"+str(priority)+";"+str(size),True)
+    elif (i ==0):
+      disco.escreverProcessoDisco("\n"+str(pid)+";"+name+";"+str(quantum)+";"+str(priority)+";"+str(size),False)
+    else:
+      disco.escreverProcessoDisco(str(pid)+";"+name+";"+str(quantum)+";"+str(priority)+";"+str(size),False) 
+  time.sleep(5)
+  tabelaDisco.delete(*tabelaDisco.get_children())
+  for item in disco.getDisco():
+    tabelaDisco.insert('', 'end', values=item)
+
+
+janela = tk.Tk()
+janela.title("Projeto Kernel")
+tamanhoMemoria = 4
+memoriaVirtual = MemoriaVirtual(tamanhoMemoria)
+disco = Disco("arquivo.txt")
+
+# Memória Virtual ----------------------------------------------------
+
+mVlabel = tk.Label(janela,text = "Memória Virtual:")
+mVlabel.place(x = 20, y = 10)
+
+dataColsVirtual = ('BITR', 'TIME', 'INDEX','PID')
+tabelaVirtual = ttk.Treeview(janela,columns=dataColsVirtual ,show='headings', height = tamanhoMemoria )
+tabelaVirtual.column(column = 'BITR', width = '40')
+tabelaVirtual.column(column = 'TIME', width = '40')
+tabelaVirtual.column(column = 'INDEX', width = '40')
+tabelaVirtual.column(column = 'PID', width = '40')
+tabelaVirtual.place(x = 20, y = 40)
+
+for c in dataColsVirtual:
+  tabelaVirtual.heading(c, text=c.title())
+
+for item in memoriaVirtual.getMemoriaVirtual():
+  tabelaVirtual.insert('', 'end', values=item)
+
+#Memória Física ----------------------------------------------------------
+mFlabel = tk.Label(janela,text = "Memória Física:")
+mFlabel.place(x = 250, y = 10)
+
+dataColsFisica = ('MAPA', 'START', 'END')
+tabelaFisica = ttk.Treeview(janela,columns=dataColsFisica ,show='headings', height = tamanhoMemoria   )
+tabelaFisica.column(column = 'MAPA', width = '40')
+tabelaFisica.column(column = 'START', width = '40')
+tabelaFisica.column(column = 'END', width = '40')
+tabelaFisica.place(x = 250, y = 40)
+for c in dataColsFisica:
+  tabelaFisica.heading(c, text=c.title())
+
+for item in memoriaVirtual.getProcessos():
+  tabelaFisica.insert('', 'end', values=item)
+
+#Tabela Processos  ----------------------------------------------------------
+processlabel = tk.Label(janela,text = "Processos:")
+processlabel.place(x = 372, y = 10)
+
+
+dataColsProcess = ('PID', 'NAME', 'QUANTUM','PRIORITY','SIZE')
+tabelaProcess = ttk.Treeview(janela,columns=dataColsProcess ,show='headings', height = tamanhoMemoria)
+tabelaProcess.column(column = 'PID', width = '60')
+tabelaProcess.column(column = 'NAME', width = '60')
+tabelaProcess.column(column = 'QUANTUM', width = '30')
+tabelaProcess.column(column = 'PRIORITY', width = '30')
+tabelaProcess.column(column = 'SIZE', width = '40')
+tabelaProcess.place(x = 372, y = 40)
+
+for c in dataColsProcess:
+  tabelaProcess.heading(c, text=c.title())
+
+for item in memoriaVirtual.getProcessos():
+  print(item[3])
+  tabelaProcess.insert('', 'end', values=item[3])
+
+
+#Tabela CPU -----------------------------------------------------------------------
+CPUlabel = tk.Label(janela,text = "CPU:")
+CPUlabel.place(x = 20, y = 200)
+
+dataColsCPU = ('PID', 'NAME', 'QUANTUM','PRIORITY','SIZE')
+tabelaCPU = ttk.Treeview(janela,columns=dataColsCPU ,show='headings', height = 1 )
+tabelaCPU.column(column = 'PID', width = '40')
+tabelaCPU.column(column = 'NAME', width = '40')
+tabelaCPU.column(column = 'QUANTUM', width = '40')
+tabelaCPU.column(column = 'PRIORITY', width = '40')
+tabelaCPU.column(column = 'SIZE', width = '40')
+tabelaCPU.place(x = 20, y = 230)
+
+for c in dataColsCPU:
+  tabelaCPU.heading(c, text=c.title())
+
+CPU = [['PID', 'NAME', 'QUANTUM','PRIORITY','SIZE']]
+for item in CPU:
+  tabelaCPU.insert('', 'end', values=item)
+
+#Tabela Disco -----------------------------------------------------------------------
+discolabel = tk.Label(janela,text = "Disco:")
+discolabel.place(x = 250, y = 200)
+
+dataColsDisco = ('PID', 'NAME', 'QUANTUM','PRIORITY','SIZE')
+tabelaDisco = ttk.Treeview(janela,columns=dataColsDisco ,show='headings', height = disco.tamanhoDisco())
+tabelaDisco.column(column = 'PID', width = '40')
+tabelaDisco.column(column = 'NAME', width = '80')
+tabelaDisco.column(column = 'QUANTUM', width = '40')
+tabelaDisco.column(column = 'PRIORITY', width = '40')
+tabelaDisco.column(column = 'SIZE', width = '40')
+tabelaDisco.place(x = 250, y = 230)
+
+for c in dataColsDisco:
+  tabelaDisco.heading(c, text=c.title())
+
+for item in disco.getDisco():
+  tabelaDisco.insert('', 'end', values=item)
+
+
+#menu para inserir no disco  -----------------------------------------------------------------------
+inserirLabel = tk.Label(janela,text = "Inserir processos no disco:", font = ("arial",12,"bold"))
+inserirLabel.place(x = 500, y = 200)
+entrada = Entry(janela)
+entrada.place(x=500, y = 220)
+botao = Button(janela, width = 20, text = 'inserir', command = inserirProcessos )
+botao.place(x = 500, y = 260)
+
+#variáveis globais -----------------------------------------------------------------------
+
 retirarProcesso = 0
 prioridade = 4
 contadorPrioridade = 0
@@ -74,11 +214,22 @@ def controlaRetidadaDisco():
               print("Processo ",processo," finalizou a execução! (não volta para o disco)")
             else:
               disco.escreverProcessoDisco(str(processo[0])+";"+processo[1]+";"+str(processo[2])+";"+str(processo[3])+";"+str(processo[4]),False)
-        print("Memoria virtual:\nBitR|Tempo|Índice|Processo")
-        memoriaVirtual.printMemoriaVirtual()
-        print("Memoria fisica:\nMapa De Bits|Inicio|Fim|Processo")
-        memoriaVirtual.printMemoriaFisica()   
-        print("--------------------------------------------------------------\n \n")
+        #atualizar memória virtual ---------------------------------------------------
+        tabelaVirtual.delete(*tabelaVirtual.get_children())
+        for item in memoriaVirtual.getMemoriaVirtual():
+          tabelaVirtual.insert('', 'end', values=item)
+
+        #atualizar memória fisica ----------------------------------------------------
+        tabelaFisica.delete(*tabelaFisica.get_children())
+        tabelaProcess.delete(*tabelaProcess.get_children())
+        for item in memoriaVirtual.getProcessos():
+          tabelaFisica.insert('', 'end', values=item)
+          tabelaProcess.insert('', 'end', values=item[3])
+
+        tabelaDisco.delete(*tabelaDisco.get_children())
+        for item in disco.getDisco():
+          tabelaDisco.insert('', 'end', values=item)  
+
         retirarProcesso -= 1
         time.sleep(1)
       if(t3.isAlive() == False):
@@ -95,10 +246,25 @@ def CPU():
         for processo in memoriaVirtual.getProcessos():
           if(processo[3][3]==prioridade and processo[3][2]!=0):
             memoriaVirtual.decrementaProcesso(processo)
+
+            tabelaCPU.delete(*tabelaCPU.get_children())
+            CPU = [processo[3]]
+            for item in CPU:
+              tabelaCPU.insert('', 'end', values=item)  
+
             print("Executando Processo:",processo[3])           
             time.sleep(1)
             encontrouProcesso = 1
+            if(processo[3][2]==0):
+              #atualizar memória fisica ----------------------------------------------------
+              tabelaFisica.delete(*tabelaFisica.get_children())
+              tabelaProcess.delete(*tabelaProcess.get_children())
+              for item in memoriaVirtual.getProcessos():
+                tabelaFisica.insert('', 'end', values=item)
+                tabelaProcess.insert('', 'end', values=item[3])
+
             break
+
 
         for processo in memoriaVirtual.getProcessos():            
           if(processo[3][2]==0):
@@ -145,34 +311,15 @@ def CPU():
         retirarProcesso = 1 
         time.sleep(1)    
 
-def inserirProcessos():
-  while(True):
-    quantidade = input("A qualquer momento digite a quantidade de processos novos que deseja criar, todos os valores dos processos serão preenchidos aleatoriamente ")
-    
-    for i in range (0,int(quantidade)):
-      letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      pid = random.randint(0,9999)
-      while (disco.existeNoDisco(str(pid))):
-        pid = random.randint(0,9999)
-      name = ""
-      for letra in range (0,6):
-        name += random.choice(letras)
-      quantum = random.randint(1,4)
-      priority = random.randint(1,4)
-      size = random.randint(100,500)
-      if(i == int(quantidade)-1):        
-        disco.escreverProcessoDisco(str(pid)+";"+name+";"+str(quantum)+";"+str(priority)+";"+str(size),True)
-      elif (i ==0):
-        disco.escreverProcessoDisco("\n"+str(pid)+";"+name+";"+str(quantum)+";"+str(priority)+";"+str(size),False)
-      else:
-        disco.escreverProcessoDisco(str(pid)+";"+name+";"+str(quantum)+";"+str(priority)+";"+str(size),False) 
-    time.sleep(5)
+
 
 t1 = threading.Thread(target=controlaTempoPrioridade)
 t2 = threading.Thread(target=controlaRetidadaDisco)
 t3 = threading.Thread(target=CPU)
-t4 = threading.Thread(target=inserirProcessos)
 
-t3.start() 
-t1.start()
+t3.start()
 t2.start()
+t1.start()
+
+janela.geometry("740x500")
+janela.mainloop()

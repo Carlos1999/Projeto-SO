@@ -53,6 +53,22 @@ class Disco:
     arquivoLeitura.close() 
     return False  
      
+  def getDisco(self):
+    listaDisco = []
+    arquivoLeitura = open(self.nomeArquivo, 'r') 
+    for linha in arquivoLeitura:
+      linhaSplit = linha.split(";")       
+      listaDisco.append([linhaSplit[0],linhaSplit[1],linhaSplit[2],linhaSplit[3],linhaSplit[4]])    
+    arquivoLeitura.close()
+    return listaDisco       
+
+  def tamanhoDisco(self):
+    arquivoLeitura = open(self.nomeArquivo, 'r')
+    tamanho = 0
+    for linha in arquivoLeitura:
+      tamanho +=1
+    arquivoLeitura.close()
+    return tamanho
 
   def print(self):
     arquivoLeitura = open(self.nomeArquivo, 'r')  

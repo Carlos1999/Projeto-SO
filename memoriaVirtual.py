@@ -12,7 +12,7 @@ class MemoriaVirtual:
       self.memoriaFisica.adicionarProcesso(str(i)+";NAME;1;0;"+str(int((self.memoriaFisica.getTamanhoMemoria()+1)/self.tamanhoMemoria)))
     for i in range(0,tamanhoMemoria):
       self.memoriaFisica.substituirProcesso(i,[0,"VAZIO",0,-1,0])  
-      self.inserir([-1,0,0,0,0]) 
+      self.inserir([0,0,0,0,0]) 
     
 #----------------------------------------------------------------------------------
   def organizarProcesso(self,pid,name,quantum,priority,size):
@@ -106,6 +106,8 @@ class MemoriaVirtual:
   def getProcessos(self):
     return self.memoriaFisica.getMemoria()
 
+  def getMemoriaVirtual(self):
+    return self.memoriaVirtual
   def setProcessos(self,memoria):
     self.memoriaFisica = memoria  
 
