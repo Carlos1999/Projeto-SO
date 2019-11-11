@@ -4,10 +4,16 @@ from memoriaVirtual import MemoriaVirtual
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
+from tkinter import messagebox
 import random
 import time
 import threading
 import sys
+
+def iniciar():
+  t3.start()
+  t2.start()
+  t1.start()
 
 def inserirProcessos():
   quantidade = entrada.get()
@@ -29,7 +35,6 @@ def inserirProcessos():
       disco.escreverProcessoDisco("\n"+str(pid)+";"+name+";"+str(quantum)+";"+str(priority)+";"+str(size),False)
     else:
       disco.escreverProcessoDisco(str(pid)+";"+name+";"+str(quantum)+";"+str(priority)+";"+str(size),False) 
-  time.sleep(5)
   tabelaDisco.delete(*tabelaDisco.get_children())
   for item in disco.getDisco():
     tabelaDisco.insert('', 'end', values=item)
@@ -102,6 +107,9 @@ for item in memoriaVirtual.getProcessos():
 CPUlabel = tk.Label(janela,text = "CPU:")
 CPUlabel.place(x = 20, y = 200)
 
+
+
+
 dataColsCPU = ('PID', 'NAME', 'QUANTUM','PRIORITY','SIZE')
 tabelaCPU = ttk.Treeview(janela,columns=dataColsCPU ,show='headings', height = 1 )
 tabelaCPU.column(column = 'PID', width = '40')
@@ -140,17 +148,30 @@ for item in disco.getDisco():
 
 #menu para inserir no disco  -----------------------------------------------------------------------
 inserirLabel = tk.Label(janela,text = "Inserir processos no disco:", font = ("arial",12,"bold"))
-inserirLabel.place(x = 500, y = 200)
+inserirLabel.place(x = 510, y = 200)
 entrada = Entry(janela)
-entrada.place(x=500, y = 220)
+entrada.place(x=510, y = 220)
 botao = Button(janela, width = 20, text = 'inserir', command = inserirProcessos )
-botao.place(x = 500, y = 260)
+botao.place(x = 510, y = 260)
 
+# menu iniciar -----------------------------------------------------------------------------
+botao = Button(janela, width = 5, text = 'start', command = iniciar , bg = 'green')
+botao.place(x = 510, y = 400)
 #variáveis globais -----------------------------------------------------------------------
 
 retirarProcesso = 0
 prioridade = 4
 contadorPrioridade = 0
+var = StringVar()
+priolabel = tk.Label(janela, textvariable=var)
+var.set("Prioridade: 4")
+priolabel.place(x = 20, y = 500)
+
+move = StringVar()
+movelabel = tk.Label(janela, textvariable=move  )
+move.set("")
+movelabel.place(x = 60, y = 200)
+
 
 def controlaTempoPrioridade():
   global contadorPrioridade
@@ -161,6 +182,8 @@ def controlaTempoPrioridade():
         if(contadorPrioridade==15):
           prioridade = 3
           print("Prioridade mudou para:"+str(prioridade))
+
+          var.set("Prioridade: "+str(prioridade)) 
           contadorPrioridade = 0
         else:  
           contadorPrioridade+=1
@@ -171,6 +194,7 @@ def controlaTempoPrioridade():
         if(contadorPrioridade==10):
           prioridade = 2
           print("Prioridade mudou para:"+str(prioridade))
+          var.set("Prioridade: "+str(prioridade))
           contadorPrioridade = 0
         else:  
           contadorPrioridade+=1
@@ -181,6 +205,7 @@ def controlaTempoPrioridade():
         if(contadorPrioridade== 8):
           prioridade = 1
           print("Prioridade mudou para:"+str(prioridade))
+          var.set("Prioridade: "+str(prioridade))
           contadorPrioridade = 0
         else:  
           contadorPrioridade+=1
@@ -190,12 +215,13 @@ def controlaTempoPrioridade():
       elif(prioridade == 1):
         if(contadorPrioridade==5):
           prioridade = 4
+          var.set("Prioridade: "+str(prioridade))
           print("Prioridade mudou para:"+str(prioridade))
           contadorPrioridade = 0
         else:  
           contadorPrioridade+=1
           memoriaVirtual.controleTempoBitR()
-          time.sleep(1)  
+          time.sleep(1)     
 
     else:
       sys.exit(0) #finalizar programa
@@ -215,6 +241,8 @@ def controlaRetidadaDisco():
             else:
               disco.escreverProcessoDisco(str(processo[0])+";"+processo[1]+";"+str(processo[2])+";"+str(processo[3])+";"+str(processo[4]),False)
         #atualizar memória virtual ---------------------------------------------------
+        move.set("Processos indo do disco para a memória!")
+        movelabel.config(bg = "red")
         tabelaVirtual.delete(*tabelaVirtual.get_children())
         for item in memoriaVirtual.getMemoriaVirtual():
           tabelaVirtual.insert('', 'end', values=item)
@@ -243,6 +271,10 @@ def CPU():
     encontrouProcesso = 0
     while(True):
       if(memoriaVirtual.cheia() or disco.vazio()):      
+        move.set("")
+        movelabel.config(bg = janela.cget("background"))
+        
+
         for processo in memoriaVirtual.getProcessos():
           if(processo[3][3]==prioridade and processo[3][2]!=0):
             memoriaVirtual.decrementaProcesso(processo)
@@ -272,6 +304,7 @@ def CPU():
 
         if(disco.vazio() and processoFinalizou == len(memoriaVirtual.getProcessos())):
           print("Disco e memória vazios, programa finalizado!")
+          messagebox.showinfo("Programa Finalizou", "Todos os processos no disco foram executados! Fim do programa")
           disco.escreverProcessoDisco("1;a;3;4;500",False)
           disco.escreverProcessoDisco("2;b;3;4;500",False)
           disco.escreverProcessoDisco("3;c;3;4;500",False)
@@ -289,6 +322,8 @@ def CPU():
           print("Todos os processos na memória foram executados, serão trazidos novos!")
           print("|-------------------------------------------------------------------|\n \n \n")
           prioridade = 4
+
+          var.set("Prioridade: "+str(prioridade)) 
           contadorPrioridade = 0
           time.sleep(1)
 
@@ -297,10 +332,12 @@ def CPU():
           contadorPrioridade = 0
           prioridade -=1
           print("Prioridade mudou para:"+str(prioridade))
+          var.set("Prioridade: "+str(prioridade))
 
         elif (encontrouProcesso==0 and prioridade==1):
           contadorPrioridade = 0
           prioridade = 4
+          var.set("Prioridade: "+str(prioridade))
           print("Prioridade mudou para:"+str(prioridade))
         
         processoFinalizou =0
@@ -317,9 +354,12 @@ t1 = threading.Thread(target=controlaTempoPrioridade)
 t2 = threading.Thread(target=controlaRetidadaDisco)
 t3 = threading.Thread(target=CPU)
 
-t3.start()
-t2.start()
-t1.start()
+
+priolabel.pack()
+priolabel.place(x = 20, y = 270)
+
+movelabel.pack()
+movelabel.place(x = 250, y = 140)
 
 janela.geometry("740x500")
 janela.mainloop()
